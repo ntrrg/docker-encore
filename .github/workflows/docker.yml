@@ -1,0 +1,36 @@
+name: Docker
+on:
+  push:
+    branches:
+      - main
+  create:
+    tags:
+      - '*'
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v2
+
+      - name: Log into the Docker Registry
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+
+      - name: "Build and push 'latest'"
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          docker build -f glibc.Dockerfile -t $DOCKER_IMAGE .
+          docker push $DOCKER_IMAGE
+
+      - name: "Build and push versioned images"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          docker build -f glibc.Docker -t $DOCKER_IMAGE:"${GITHUB_REF:11}" .
+          docker push $DOCKER_IMAGE:"${GITHUB_REF:11}"
+

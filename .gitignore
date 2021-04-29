@@ -1,0 +1,26 @@
+nogit-*
+
+#########
+# Tools #
+#########
+
+# GNU Screen
+.screenrc
+
+# Mage
+.mage/output/
+
+# Sublime Text
+*.sublime*
+
+# Vim
+*.sw[op]
+Session.vim
+*~
+
+######
+# OS #
+######
+
+# MacOS
+.DS_Store
